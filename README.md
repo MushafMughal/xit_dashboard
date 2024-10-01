@@ -1,4 +1,3 @@
-
 # XTI Performance Dashboard
 XTI Performance Dashboard is a web-based tool designed to visualize and track sales and performance metrics in real time. The dashboard allows users to filter data by Managing Director (MD), District Manager (DM), and Market, and displays the relevant key metrics on the main page. It also features a time frame filter embedded within the "Key Metrics Report Card" to further analyze data over specific periods.
 
