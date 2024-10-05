@@ -354,26 +354,121 @@ if selected2 == "Major Metrics":
 
                 else: 
                     col50,col5, col6, col8, col9 = st.columns(5)
-
                     col50.info(f'ELB Rank: {commas_nd(filtered_df["ELB RANK"].mean())}')
                     col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
                     col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
                     col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
                     col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
 
-                    col7,col13,col10,col11, col12, = st.columns(5)
-                    
 
+                    col7,col13,col10,col11, col12, = st.columns(5)
                     col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
-                    col10.info(f"APH: ${(filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)}")
-                    col11.info(f"APB: ${(filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)}")
-                    col12.info(f"BPH: {(filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)}")
-                    col13.info(f'ST Conv: {((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)}%')
+                    
+                    mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                    if mean_value_col10 <= 13:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(3) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(3) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col10.info(f"APH: ${mean_value_col10}")
+
+                    mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
+                    if mean_value_col11 <= 40:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(4) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(4) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col11.info(f"APB: ${mean_value_col11}")
+                    
+                    mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                    if mean_value_col12 <= 0.40:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(5) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(5) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col12.info(f"BPH: {mean_value_col12}")
+
+                    mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
+                    if mean_value_col13 <= 12:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(2) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col13.info(f'ST Conv: {mean_value_col13}%')
+
 
                     col14,col15,col18,col16,col17 = st.columns(5)
+
+                    mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
+                    if mean_value_col14 <= 100:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(1) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col14.info(f"ACC % TGT: {mean_value_col14}%")
+
+                    mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
+                    if mean_value_col15 <= 100:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {      
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(2) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col15.info(f"PPD % TGT: {mean_value_col15}%")
                     
-                    col14.info(f"ACC % TGT: {((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)}%")
-                    col15.info(f"PPD % TGT: {((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)}%")
                     col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
                     col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
                     col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
@@ -492,25 +587,66 @@ if selected2 == "Performance Bonus":
                 else: 
                     col5, col6, col7, = st.columns(3)
 
-                    col5.info(f'Growth AVG: {(filtered_df["GROWTH % M"].mean()).round(2)}%')
+                    # Calculate the mean once and store it in a variable
+                    mean_value_col5 = filtered_df["GROWTH % M"].mean().round(2)
+
+                    if mean_value_col5 <= 100:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > p {
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+
+                    col5.info(f'Growth AVG: {mean_value_col5}%')
                     
                     # Calculate the mean once and store it in a variable
-                    mean_value = filtered_df["95 ACT RET M"].mean().round(2)
+                    mean_value_col6 = filtered_df["95 ACT RET M"].mean().round(2)
 
-                    if mean_value <= 57:
+                    if mean_value_col6 <= 57:
                         style = '''
                             <style>
                             #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {
                                 font-size: 0.88rem;
-                                color: #ff0000e0;}
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(2) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
                             </style>
                             '''
                         st.markdown(style, unsafe_allow_html=True)
                         
                     # Display the result in col6 in both cases
-                    col6.info(f'95 Act Ret AVG: {mean_value}%')
+                    col6.info(f'95 Act Ret AVG: {mean_value_col6}%')
 
-                    col7.info(f"PB Attainment:  {((filtered_df["PB BONUS"].sum()/filtered_df["MIN EXPECTED"].sum())*100).round(2)}%")
+                    mean_value_col7 = ((filtered_df["PB BONUS"].sum()/filtered_df["MIN EXPECTED"].sum())*100).round(2)
+
+                    if mean_value_col6 <= 100:
+                        style = '''
+                            <style>
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(3) > div > div > div > div > div > div > div > div > div > div > p {
+                                font-size: 0.88rem;
+                                color: #ff0000;
+                                }
+
+                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(3) > div > div > div > div > div > div {
+                                background-color: #ff00001c;
+                            }
+                            </style>
+                            '''
+                        st.markdown(style, unsafe_allow_html=True)
+                    col7.info(f"PB Attainment:  {mean_value_col7}%")
+                    
+                    
                     col8,col9,col10 = st.columns(3)
                     
                     col8.info(f'PB Achieved: ${commas(filtered_df["PB BONUS"].sum())}')
@@ -640,3 +776,5 @@ if selected2 == "Express Leaderboard":
 
     elif selected == 'Data Visualization':      
         st.write("Under-Development")
+
+
