@@ -6,18 +6,22 @@ from datetime import datetime, timedelta
 from streamlit_extras.metric_cards import style_metric_cards
 import base64
 import time
+from streamlit_multi_menu import streamlit_multi_menu
+
 
 #Decimals
 
 def commas(number):
-    return f"{number:,.2f}"
+    return f"{number:,.2f}" 
 def commas_nd(number):
     return f"{number:,.0f}"
 
 # Load the Excel data
 
-# MAIN PAGE
-df = pd.read_excel("KPI Record Dashboard.xlsx", sheet_name='All Matrics', header=0)  # Adjust header or skiprows as needed
+# Major Metrics PAGE
+
+#ALL SECTION
+df = pd.read_excel("KPI Record Dashboard.xlsx", sheet_name='ALL', header=0)  # Adjust header or skiprows as needed
 
 
 cols = ['ST CLICKS', 'BOXES GOALS', 'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL',
@@ -31,6 +35,7 @@ df.rename(columns={
     "QPAY CONV": "QPAY (%)",
     "ST CONV": "ST (%)"
 }, inplace=True)
+
 
 df['MONTH'] = pd.to_datetime(df['MONTH'])
 df["MONTH_G"] = df['MONTH']
@@ -69,8 +74,45 @@ main_cols = ['MARKET', 'STORE', 'MD', 'DM',
        'BPH', 'APH', 'APB', 'QPAY (%)', 'ST (%)', '1K Counts', 'HINT', 'BTS',
        'BTS% BY BOXES']
 
+#MD SECTION
+dfMD = pd.read_excel("KPI Record Dashboard.xlsx",sheet_name="MD", header=0) 
+dfMD["MONTH"]= dfMD["MONTH"].dt.strftime('%B')
+cols_md = ['ST CLICKS','BOXES GOALS', 'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL',
+       'ACCESSORIES', 'ACCESSORY % TARGET', 'HOURS', 'QPAY', 'BPH', 'APH',
+       'APB', 'QPAY CONV', 'ST CONV', '1K Counts', 'HINT', 'BTS',
+       'BTS% BY BOXES']
+for i in cols_md: 
+    dfMD[i] = pd.to_numeric(dfMD[i], errors='coerce')
+main_cols_md = ['TIME FRAME','MONTH',"MD",'ST CLICKS',
+       'BOXES GOALS', 'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL',
+       'ACCESSORIES', 'ACCESSORY % TARGET', 'HOURS', 'QPAY', 'BPH', 'APH',
+       'APB', 'QPAY CONV', 'ST CONV', '1K Counts', 'HINT', 'BTS',
+       'BTS% BY BOXES']
 
-# Performance Bonus
+#DM SECTION
+dfDM = pd.read_excel("KPI Record Dashboard.xlsx",sheet_name="DM", header=0) 
+dfDM["MONTH"]= dfDM["MONTH"].dt.strftime('%B')
+cols_dm = ['ST CLICKS','BOXES GOALS', 'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL',
+       'ACCESSORIES', 'ACCESSORY % TARGET', 'HOURS', 'QPAY', 'BPH', 'APH',
+       'APB', 'QPAY CONV', 'ST CONV', '1K Counts', 'HINT', 'BTS',
+       'BTS% BY BOXES']
+for i in cols_dm: 
+    dfMD[i] = pd.to_numeric(dfDM[i], errors='coerce')
+main_cols_dm = ['TIME FRAME','MONTH',"DM",'ST CLICKS',
+       'BOXES GOALS', 'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL',
+       'ACCESSORIES', 'ACCESSORY % TARGET', 'HOURS', 'QPAY', 'BPH', 'APH',
+       'APB', 'QPAY CONV', 'ST CONV', '1K Counts', 'HINT', 'BTS',
+       'BTS% BY BOXES']
+
+#MONTH SECTION
+dfMon = pd.read_excel("KPI Record Dashboard.xlsx",sheet_name="MONTH", header=0)
+dfMon["MONTH"]= dfMon["MONTH"].dt.strftime('%B')
+main_cols_mon = ['TIME FRAME', 'ST CLICKS', 'BOXES GOALS',
+                'BOXES', 'BOXES % TARGET', 'ACCESSORY GOAL', 'ACCESSORIES',
+                'ACCESSORY % TARGET', 'HOURS', 'QPAY', 'BPH', 'APH', 'APB', 'QPAY CONV',
+                'ST CONV', '1K Counts', 'HINT', 'BTS', 'BTS% BY BOXES']
+
+# Performance Bonus PAGE
 
 df1 = pd.read_excel("PB YTD.xlsx", sheet_name='PB YTD', header=0)  # Adjust header or skiprows as needed
 df1['MONTH'] = pd.to_datetime(df1['MONTH'])
@@ -167,8 +209,43 @@ data = {
 }
 lst = ["January","Feburary","March","April","May","June","July","August"]
 
-# Code
 
+# Audit Tracker Q3 PAGE
+df2 = pd.read_excel("Audit Tracker - Q3.xlsx", header=0)  # Adjust header or skiprows as needed
+df2["Score_C"] = df2["Score"]
+df2["Score"] = (df2["Score"]*100).astype(str) + "%"
+main_cols_audit = ['Score', 'Status', 'Market', 'Store', 'MD', 'DM', 'Audit Date',
+       'Audit ID']
+
+#PHONE PAGE
+
+#Android section
+dfAnd = pd.read_excel("iPhone and Android Avg Selling Price.xlsx",sheet_name="Android", header=0)  # Adjust header or skiprows as needed
+dfAnd["MONTH"]=dfAnd["MONTH"].dt.strftime('%B')
+cols_and = [ 'AVERAGE PRICE', 'QUANTITY']
+for i in cols_and: 
+    dfAnd[i] = pd.to_numeric(dfAnd[i], errors='coerce')
+dfAnd['AVERAGE PRICE'] = dfAnd['AVERAGE PRICE'].round(2)
+dfAnd['QUANTITY'] = dfAnd['QUANTITY'].round(2)
+main_cols_and = ['TIME FRAME', 'MONTH', 'MARKET', 'STORE', 'MD', 'DM',
+       'MODEL', 'AVERAGE PRICE', 'QUANTITY']
+
+#Iphone section
+dfIp = pd.read_excel("iPhone and Android Avg Selling Price.xlsx",sheet_name="IPhone", header=0)  # Adjust header or skiprows as needed
+dfIp["MONTH"]=dfIp["MONTH"].dt.strftime('%B')
+cols_ip = [ 'AVERAGE PRICE', 'QUANTITY']
+for i in cols_ip: 
+    dfIp[i] = pd.to_numeric(dfIp[i], errors='coerce')
+dfIp['AVERAGE PRICE'] = dfIp['AVERAGE PRICE'].round(2)
+dfIp['QUANTITY'] = dfIp['QUANTITY'].round(2)
+main_cols_ip = ['TIME FRAME', 'MONTH', 'MARKET', 'STORE', 'MD', 'DM',
+       'MODEL', 'AVERAGE PRICE', 'QUANTITY']
+
+#Hiring Page
+dfH = pd.read_excel("Avg Hiring YTD.xlsx", header=0)
+dfH["MONTH"]=dfH["MONTH"].dt.strftime('%B')
+
+# Code
 def get_base64(bin_file):
     with open(bin_file, 'rb') as f:
         data = f.read()
@@ -233,26 +310,56 @@ def style_sidebar_multiselect():
     #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
         font-size: 0.88rem;  /* Set your desired font size for all instances */
     }
+    
+    #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(1) {
+        padding-top: 15px !important;
+        border-bottom: 1.8px solid #bdbfc3 !important;}
 
-    .st-as[role="radiogroup"] > label > div:first-child {
-        background-color: #832a80; !important;
-    }
-
-    </style>
+    </style> 
     '''
     st.markdown(sidebar_style, unsafe_allow_html=True)
 
 style_sidebar_multiselect()
 
+sub_menus = {"Xclusive Trading Inc.":["Major Metrics","Performance Bonus","Express Leaderboard","Audit Tracker Q3","Phone's Sales","Hiring YTD"],}
+sub_menu_icons = {"Xclusive Trading Inc.": ["home","grade","trending_up", "check_box","phone_iphone","person"]}
+list_of_xti_imgs = ["https://www.shutterstock.com/shutterstock/photos/585123094/display_1500/stock-vector-abstract-polygonal-background-geometrical-backdrop-with-connecting-dots-lines-triangles-for-585123094.jpg",
+                        "https://www.shutterstock.com/shutterstock/photos/1157434318/display_1500/stock-photo-wave-white-background-abstract-white-futuristic-background-wave-with-connecting-dots-and-lines-on-1157434318.jpg",
+                        "https://www.shutterstock.com/shutterstock/photos/766689100/display_1500/stock-vector-abstract-financial-chart-with-up-trend-line-graph-and-arrow-in-stock-market-on-white-color-766689100.jpg",
+                        "https://www.shutterstock.com/shutterstock/photos/1231011346/display_1500/stock-photo-wave-of-particles-on-white-background-abstract-interlacing-lines-and-points-digital-connection-of-1231011346.jpg",
+                        "https://www.shutterstock.com/shutterstock/photos/1901428924/display_1500/stock-vector-abstract-background-of-hexagons-pattern-and-chemical-engineering-genetic-research-molecular-1901428924.jpg",
+                        "https://www.shutterstock.com/shutterstock/photos/1727964232/display_1500/stock-vector-abstract-financial-chart-with-uptrend-line-graph-and-candlestick-on-black-and-white-color-1727964232.jpg"]
+sub_menu_imgs = {"Xclusive Trading Inc.":list_of_xti_imgs}
+
 with st.sidebar:
-    selected2 = option_menu("Xclusive Trading Inc.", ["Major Metrics","Performance Bonus","Express Leaderboard"], 
-        icons=['house', 'gear'], menu_icon="cast", default_index=0,
-        styles={"nav-link": {"--hover-color": "#a42bad4b"},
-                "nav-link-selected": {"background-color": "#832a80"}
-                },key="00") # #a52bad
+    selected2 = streamlit_multi_menu(menu_titles=list(sub_menus.keys()),
+                                sub_menus=sub_menus,
+                                sub_menu_icons = sub_menu_icons,
+                                use_container_width=True,
+                                sub_menu_imgs=sub_menu_imgs,sub_menu_text_align="center",
+                                menu_titles_font_size = 28,
+                                sub_menu_font_color = "#832a80",
+                                sub_menu_font_size = 16.5,
+                                sub_menu_border_radius = 10)
     
+if not selected2:
+    css_body_container = f'''
+    <style>
+        [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+        [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+    </style>
+    '''
+    st.markdown(css_body_container,unsafe_allow_html=True)
+
+    with st.expander(label="Note",expanded=True):
+        with st.container(border= True):
+            st.title("Performance Dashboard")
+            st.write("""
+            Welcome to the Performance Dashboard! Navigate through the pages using the sidebar.
+            """)
+
 if selected2 == "Major Metrics":
-    st.title("Performance Dashboard")
+    st.title("Major Metrics Dashboard")
     selected = option_menu(menu_title=None,options=["Data Record", "Data Visualization"],orientation='horizontal',
                         styles={
                             "nav-link": {"--hover-color": "#a42bad4b"},
@@ -260,229 +367,498 @@ if selected2 == "Major Metrics":
                             },key="0")
 
     if selected == "Data Record":
-        
-        st.sidebar.header('Please Filter here:')
-        # Sidebar - Filter by MD (with multiselect)
-        md_options = ['All'] + df['MD'].unique().tolist()  # Add 'All' to MD options
-        selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="1")
-       
-        # Filter MD only if 'All' is not selected
-        if 'All' in selected_md or len(selected_md) == 0:
-            filtered_df = df
-        else:
-            filtered_df = df[df['MD'].isin(selected_md)]
 
-        # Ensure filtered_df is not empty before applying DM filter
-        if not filtered_df.empty:
-            dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
-            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="2")
-
-            # Filter MARKET only if 'All' is not selected
-            if 'All' not in selected_dm and len(selected_dm) > 0:
-                filtered_df = filtered_df[filtered_df['DM'].isin(selected_dm)]
-
-        # Ensure filtered_df is not empty before applying DM filter
-        if not filtered_df.empty:
-            MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
-            selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="3")
-
-            # Filter MARKET only if 'All' is not selected
-            if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
-                filtered_df = filtered_df[filtered_df['MARKET'].isin(selected_MARKET)]
-
-        # Ensure filtered_df is not empty before applying DM filter
-        if not filtered_df.empty:
-            Store_options = ['All'] + filtered_df['STORE'].unique().tolist()  # Update MARKET options based on filtered DM data
-            selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="4")
-
-            # Filter MARKET only if 'All' is not selected
-            if 'All' not in selected_STORE and len(selected_STORE) > 0:
-                filtered_df = filtered_df[filtered_df['STORE'].isin(selected_STORE)]
-
-        if not filtered_df.empty:
-            months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
-            selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="5")
-
-            # Filter only if 'All' is not selected
-            if 'All' not in selected_months and len(selected_months) > 0:
-                filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
-
-        css_body_container = f'''
+        radio_style = '''
         <style>
-            [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
-            [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > label > div > p {
+
+            font-family: "Source Sans Pro", sans-serif;
+            font-weight: 600 !important;
+            font-size: 1.25rem !important;
+            color: #31333f !important;}
+
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > div {
+            border: 1.75px solid lightgrey; /* Light grey border */
+            border-radius: 15px; /* Rounded corners */
+            padding: 12px; /* Add some padding */
+            background-color: #f9f9f9; /* Optional: light background for contrast */
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow for a softer look */}
+
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > div > label > div:first-child {
+            background-color: #832a80 !important;}    
         </style>
         '''
-        st.markdown(css_body_container,unsafe_allow_html=True)
+        st.markdown(radio_style, unsafe_allow_html=True)
 
-        with st.expander(label="Key Metrics",expanded=True):
-            with st.container(border= True):
+        select_box_opts = ['All', "MD Wise", "DM Wise","Month Wise"]
+        selected_radio = st.sidebar.radio(
+            "Please Filter here:",
+            options=select_box_opts,
+            format_func=lambda x: x,
+            horizontal=True,key="123"
+        )
+        
+        if selected_radio == "All":
 
-                if not filtered_df.empty:
-                    timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
-                    selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="6")
+            css_body_container = """
+            <style>
 
-                    # Filter only if 'All' is not selected
-                    if selected_timeframe != 'All':
-                        filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
 
-                col1, col2= st.columns(2)
-                if selected_md:
-                    if len(selected_md) > 2:
-                        display_md = f"{selected_md[0]}, {selected_md[1]} ..."
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details {
+                    margin-top: -1.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+
+            # Sidebar - Filter by MD (with multiselect)
+            md_options = ['All'] + df['MD'].unique().tolist()  # Add 'All' to MD options
+            selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="1")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_md or len(selected_md) == 0:
+                filtered_df = df
+            else:
+                filtered_df = df[df['MD'].isin(selected_md)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
+                selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="2")
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_dm and len(selected_dm) > 0:
+                    filtered_df = filtered_df[filtered_df['DM'].isin(selected_dm)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="3")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
+                    filtered_df = filtered_df[filtered_df['MARKET'].isin(selected_MARKET)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                Store_options = ['All'] + filtered_df['STORE'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="4")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_STORE and len(selected_STORE) > 0:
+                    filtered_df = filtered_df[filtered_df['STORE'].isin(selected_STORE)]
+
+            if not filtered_df.empty:
+                months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
+                selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="5")
+
+                # Filter only if 'All' is not selected
+                if 'All' not in selected_months and len(selected_months) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="6")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    col1, col2= st.columns(2)
+                    if selected_md:
+                        if len(selected_md) > 2:
+                            display_md = f"{selected_md[0]}, {selected_md[1]} ..."
+                        else:
+                            display_md = ", ".join(selected_md)
+                        if ["All"] in selected_md:
+                            display_md = "All"
+                        col1.metric(f"Market Director:", display_md, delta = None)
                     else:
-                        display_md = ", ".join(selected_md)
-                    if ["All"] in selected_md:
-                        display_md = "All"
-                    col1.metric(f"Managing Director:", display_md, delta = None)
-                else:
-                    col1.metric(f"Managing Director:", "-", delta = None)
+                        col1.metric(f"Market Director:", "-", delta = None)
 
-                if selected_dm:
-                    if len(selected_dm) > 2:
-                        display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                    if selected_dm:
+                        if len(selected_dm) > 2:
+                            display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                        else:
+                            display_dm = ", ".join(selected_dm)
+                        if ["All"] in selected_dm:
+                            display_md = "All"
+                        col2.metric(f"District Manager:", display_dm, delta = None)
                     else:
-                        display_dm = ", ".join(selected_dm)
-                    if ["All"] in selected_dm:
-                        display_md = "All"
-                    col2.metric(f"District Manager:", display_dm, delta = None)
-                else:
-                    col2.metric(f"District Manager:", "-", delta = None)
+                        col2.metric(f"District Manager:", "-", delta = None)
 
-                if len(selected_MARKET) == 0 and len(selected_dm) == 0 and len(selected_md) == 0 and len(selected_months) == 0:
-                    st.warning("No data to show. Please adjust the filters.")
+                    if len(selected_MARKET) == 0 and len(selected_dm) == 0 and len(selected_md) == 0 and len(selected_months) == 0:
+                        st.warning("No data to show. Please adjust the filters.")
 
-                else: 
-                    col50,col5, col6, col8, col9 = st.columns(5)
-                    col50.info(f'ELB Rank: {commas_nd(filtered_df["ELB RANK"].mean())}')
-                    col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
-                    col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
-                    col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
-                    col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
+                    else: 
+                        col50,col5, col6, col8, col9 = st.columns(5)
+                        col50.info(f'ELB Rank: {commas_nd(filtered_df["ELB RANK"].mean())}')
+                        col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
+                        col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
+                        col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
+                        col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
 
 
-                    col7,col13,col10,col11, col12, = st.columns(5)
-                    col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
-                    
-                    mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
-                    if mean_value_col10 <= 13:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(3) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
+                        col7,col13,col10,col11, col12, = st.columns(5)
+                        col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
+                        
+                        mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col10.info(f"APH: ${mean_value_col10}")
 
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(3) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col10.info(f"APH: ${mean_value_col10}")
+                        mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
+                        col11.info(f"APB: ${mean_value_col11}")
+                        
+                        mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col12.info(f"BPH: {mean_value_col12}")
 
-                    mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
-                    if mean_value_col11 <= 40:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(4) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(4) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col11.info(f"APB: ${mean_value_col11}")
-                    
-                    mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
-                    if mean_value_col12 <= 0.40:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(5) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(5) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col12.info(f"BPH: {mean_value_col12}")
-
-                    mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
-                    if mean_value_col13 <= 12:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(4) > div:nth-child(2) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col13.info(f'ST Conv: {mean_value_col13}%')
+                        mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
+                        col13.info(f'ST Conv: {mean_value_col13}%')
 
 
-                    col14,col15,col18,col16,col17 = st.columns(5)
+                        col14,col15,col18,col16,col17 = st.columns(5)
 
-                    mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
-                    if mean_value_col14 <= 100:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
+                        mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
+                        col14.info(f"ACC % TGT: {mean_value_col14}%")
 
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(1) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col14.info(f"ACC % TGT: {mean_value_col14}%")
-
-                    mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
-                    if mean_value_col15 <= 100:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {      
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(6) > div:nth-child(2) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                    col15.info(f"PPD % TGT: {mean_value_col15}%")
-                    
-                    col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
-                    col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
-                    col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
+                        mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
+                        col15.info(f"PPD % TGT: {mean_value_col15}%")
+                        
+                        col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
+                        col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
+                        col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
 
 
-        # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
-        if len(selected_MARKET) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_months) != 0:
-            with st.expander("Show Table", expanded=False):
-                st.dataframe(filtered_df[main_cols], width=800)
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_MARKET) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_months) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols], width=800)
+        
+        if selected_radio == "MD Wise":
 
+            css_body_container = """
+            <style>
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details {
+                    margin-top: -1.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+        
+            # Sidebar - Filter by MD (with multiselect)
+            md_options = ['All'] + dfMD['MD'].unique().tolist()  # Add 'All' to MD options
+            selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="7")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_md or len(selected_md) == 0:
+                filtered_df = dfMD
+            else:
+                filtered_df = dfMD[dfMD['MD'].isin(selected_md)]
+
+            if not filtered_df.empty:
+                months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
+                selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="8")
+
+                # Filter only if 'All' is not selected
+                if 'All' not in selected_months and len(selected_months) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="9")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    col1,= st.columns(1)
+                    if selected_md:
+                        if len(selected_md) > 3:
+                            display_md = f"{selected_md[0]}, {selected_md[1]},{selected_md[2]} ..."
+                        else:
+                            display_md = ", ".join(selected_md)
+                        if ["All"] in selected_md:
+                            display_md = "All"
+                        col1.metric(f"Market Director:", display_md, delta = None)
+                    else:
+                        col1.metric(f"Market Director:", "-", delta = None)
+
+
+                    if len(selected_md) == 0 and len(selected_months) == 0:
+                        st.warning("No data to show. Please adjust the filters.")
+
+                    else: 
+                        col5, col6, col8, col9 = st.columns(4)
+                        col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
+                        col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
+                        col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
+                        col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
+
+
+                        col7,col13,col10,col11, col12, = st.columns(5)
+                        col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
+                        
+                        mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col10.info(f"APH: ${mean_value_col10}")
+
+                        mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
+                        col11.info(f"APB: ${mean_value_col11}")
+                        
+                        mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col12.info(f"BPH: {mean_value_col12}")
+
+                        mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
+                        col13.info(f'ST Conv: {mean_value_col13}%')
+
+
+                        col14,col15,col18,col16,col17 = st.columns(5)
+
+                        mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
+                        col14.info(f"ACC % TGT: {mean_value_col14}%")
+
+                        mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
+                        col15.info(f"PPD % TGT: {mean_value_col15}%")
+                        
+                        col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
+                        col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
+                        col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
+
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_md) != 0 or len(selected_months) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols_md], width=800)
+            
+        if selected_radio == "DM Wise":
+
+            css_body_container = """
+            <style>
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details {
+                    margin-top: -1.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+        
+            # Sidebar - Filter by MD (with multiselect)
+            dm_options = ['All'] + dfDM['DM'].unique().tolist()  # Add 'All' to MD options
+            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="10")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_dm or len(selected_dm) == 0:
+                filtered_df = dfDM
+            else:
+                filtered_df = dfDM[dfDM['DM'].isin(selected_dm)]
+
+            if not filtered_df.empty:
+                months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
+                selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="11")
+
+                # Filter only if 'All' is not selected
+                if 'All' not in selected_months and len(selected_months) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="12")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    col1,= st.columns(1)
+                    if selected_dm:
+                        if len(selected_dm) > 3:
+                            display_dm = f"{selected_dm[0]}, {selected_dm[1]},{selected_dm[2]} ..."
+                        else:
+                            display_dm = ", ".join(selected_dm)
+                        if ["All"] in selected_dm:
+                            display_md = "All"
+                        col1.metric(f"District Manager:", display_dm, delta = None)
+                    else:
+                        col1.metric(f"District Manager:", "-", delta = None)
+
+
+                    if len(selected_dm) == 0 and len(selected_months) == 0:
+                        st.warning("No data to show. Please adjust the filters.")
+
+                    else: 
+                        col5, col6, col8, col9 = st.columns(4)
+                        col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
+                        col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
+                        col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
+                        col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
+
+
+                        col7,col13,col10,col11, col12, = st.columns(5)
+                        col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
+                        
+                        mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col10.info(f"APH: ${mean_value_col10}")
+
+                        mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
+                        col11.info(f"APB: ${mean_value_col11}")
+                        
+                        mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col12.info(f"BPH: {mean_value_col12}")
+
+                        mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
+                        col13.info(f'ST Conv: {mean_value_col13}%')
+
+
+                        col14,col15,col18,col16,col17 = st.columns(5)
+
+                        mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
+                        col14.info(f"ACC % TGT: {mean_value_col14}%")
+
+                        mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
+                        col15.info(f"PPD % TGT: {mean_value_col15}%")
+                        
+                        col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
+                        col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
+                        col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
+
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_dm) != 0 or len(selected_months) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols_dm], width=800)
+        
+        if selected_radio == "Month Wise":
+            # Sidebar - Filter by Months
+            month_option = ['All'] + dfMon['MONTH'].unique().tolist()  # Add 'All' to MD options
+            selected_month = st.sidebar.multiselect('Select Month', month_option, default='All',key="13")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_month or len(selected_month) == 0:
+                filtered_df = dfMon
+            else:
+                filtered_df = dfMon[dfMon['MONTH'].isin(selected_month)]
+
+            css_body_container = """
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type(1)
+                [data-testid="stVerticalBlock"] {background-color: #f1f1f1de;}
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(7) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(7) > details {
+                    margin-top: -0.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="14")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    if len(selected_month) == 0 :
+                        st.warning("No data to show. Please adjust the filters.")
+
+                    else: 
+                        col5, col6, col8, col9 = st.columns(4)
+                        col5.info(f'Total ST: {commas_nd(filtered_df["ST CLICKS"].sum())}')
+                        col6.info(f'ST Clicks Avg: {commas_nd(filtered_df["ST CLICKS"].mean())}')
+                        col8.info(f'Boxes Sum: {commas_nd(filtered_df["BOXES"].sum())}')
+                        col9.info(f'Boxes Avg: {commas_nd(filtered_df["BOXES"].mean())}')
+
+
+                        col7,col13,col10,col11, col12, = st.columns(5)
+                        col7.info(f'QPay Conv: {((filtered_df["BOXES"].sum() / filtered_df["QPAY"].sum())*100).round(2)}%')
+                        
+                        mean_value_col10 = (filtered_df['ACCESSORIES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col10.info(f"APH: ${mean_value_col10}")
+
+                        mean_value_col11 = (filtered_df['ACCESSORIES'].sum()/filtered_df['BOXES'].sum()).round(2)
+                        col11.info(f"APB: ${mean_value_col11}")
+                        
+                        mean_value_col12 = (filtered_df['BOXES'].sum()/filtered_df['HOURS'].sum()).round(2)
+                        col12.info(f"BPH: {mean_value_col12}")
+
+                        mean_value_col13 = ((filtered_df["BOXES"].sum() / filtered_df["ST CLICKS"].sum())*100).round(2)
+                        col13.info(f'ST Conv: {mean_value_col13}%')
+
+
+                        col14,col15,col18,col16,col17 = st.columns(5)
+
+                        mean_value_col14 = ((filtered_df['ACCESSORIES'].sum()/filtered_df['ACCESSORY GOAL'].sum())*100).round(2)
+                        col14.info(f"ACC % TGT: {mean_value_col14}%")
+
+                        mean_value_col15 = ((filtered_df['BOXES'].sum()/filtered_df['BOXES GOALS'].sum())*100).round(2)
+                        col15.info(f"PPD % TGT: {mean_value_col15}%")
+                        
+                        col18.info(f"BTS% / Boxes: {commas((filtered_df['BTS'].sum()/filtered_df['BOXES'].sum())*100)}%")
+                        col16.info(f"Total 1K Days: {(filtered_df['1K Counts'].sum()).astype(int)}")
+                        col17.info(f"1K Days Avg: {((filtered_df['1K Counts'].mean()).round(0)).astype(int)}")
+
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_month) != 0 :
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols_mon], width=800)   
+             
     elif selected == 'Data Visualization':
         st.write("Under-Development")
-        
-        
+    
+              
 if selected2 == "Performance Bonus":
     st.title("Performance Bonus Dashboard")
     selected = option_menu(menu_title=None,options=["Data Record", "Data Visualization"],orientation='horizontal',
@@ -496,8 +872,8 @@ if selected2 == "Performance Bonus":
         st.sidebar.header('Please Filter here:')
         # Sidebar - Filter by MD (with multiselect)
         md_options = ['All'] + df1['MD'].unique().tolist()  # Add 'All' to MD options
-        selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="8")
-       
+        selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="15")
+    
         # Filter MD only if 'All' is not selected
         if 'All' in selected_md or len(selected_md) == 0:
             filtered_df = df1
@@ -507,7 +883,7 @@ if selected2 == "Performance Bonus":
         # Ensure filtered_df is not empty before applying DM filter
         if not filtered_df.empty:
             dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
-            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="9")
+            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="16")
 
             # Filter MARKET only if 'All' is not selected
             if 'All' not in selected_dm and len(selected_dm) > 0:
@@ -516,7 +892,7 @@ if selected2 == "Performance Bonus":
         # Ensure filtered_df is not empty before applying DM filter
         if not filtered_df.empty:
             MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
-            selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="10")
+            selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="17")
 
             # Filter MARKET only if 'All' is not selected
             if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
@@ -525,7 +901,7 @@ if selected2 == "Performance Bonus":
         # Ensure filtered_df is not empty before applying DM filter
         if not filtered_df.empty:
             Store_options = ['All'] + filtered_df['STORE'].unique().tolist()  # Update MARKET options based on filtered DM data
-            selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="11")
+            selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="18")
 
             # Filter MARKET only if 'All' is not selected
             if 'All' not in selected_STORE and len(selected_STORE) > 0:
@@ -533,7 +909,7 @@ if selected2 == "Performance Bonus":
 
         if not filtered_df.empty:
             months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
-            selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="12")
+            selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="19")
 
             # Filter only if 'All' is not selected
             if 'All' not in selected_months and len(selected_months) > 0:
@@ -552,7 +928,7 @@ if selected2 == "Performance Bonus":
 
                 if not filtered_df.empty:
                     timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
-                    selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="13")
+                    selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="20")
 
                     # Filter only if 'All' is not selected
                     if selected_timeframe != 'All':
@@ -566,9 +942,9 @@ if selected2 == "Performance Bonus":
                         display_md = ", ".join(selected_md)
                     if ["All"] in selected_md:
                         display_md = "All"
-                    col1.metric(f"Managing Director:", display_md, delta = None)
+                    col1.metric(f"Market Director:", display_md, delta = None)
                 else:
-                    col1.metric(f"Managing Director:", "-", delta = None)
+                    col1.metric(f"Market Director:", "-", delta = None)
 
                 if selected_dm:
                     if len(selected_dm) > 2:
@@ -587,63 +963,13 @@ if selected2 == "Performance Bonus":
                 else: 
                     col5, col6, col7, = st.columns(3)
 
-                    # Calculate the mean once and store it in a variable
                     mean_value_col5 = filtered_df["GROWTH % M"].mean().round(2)
-
-                    if mean_value_col5 <= 100:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > p {
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(1) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-
                     col5.info(f'Growth AVG: {mean_value_col5}%')
                     
-                    # Calculate the mean once and store it in a variable
-                    mean_value_col6 = filtered_df["95 ACT RET M"].mean().round(2)
-
-                    if mean_value_col6 <= 57:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(2) > div > div > div > div > div > div > div > div > div > div > p {
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(2) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
-                        
-                    # Display the result in col6 in both cases
+                    mean_value_col6 = filtered_df["95 ACT RET M"].mean().round(2)                        
                     col6.info(f'95 Act Ret AVG: {mean_value_col6}%')
 
                     mean_value_col7 = ((filtered_df["PB BONUS"].sum()/filtered_df["MIN EXPECTED"].sum())*100).round(2)
-
-                    if mean_value_col6 <= 100:
-                        style = '''
-                            <style>
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(3) > div > div > div > div > div > div > div > div > div > div > p {
-                                font-size: 0.88rem;
-                                color: #ff0000;
-                                }
-
-                            #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(6) > details > div > div > div > div > div > div > div > div:nth-child(3) > div:nth-child(3) > div > div > div > div > div > div {
-                                background-color: #ff00001c;
-                            }
-                            </style>
-                            '''
-                        st.markdown(style, unsafe_allow_html=True)
                     col7.info(f"PB Attainment:  {mean_value_col7}%")
                     
                     
@@ -653,7 +979,7 @@ if selected2 == "Performance Bonus":
                     col9.info(f'PB Available: ${commas(filtered_df["MAX AMOUNT"].sum())}')
                     col10.info(f'Missed Oppt: ${commas(filtered_df["MISSED OPPORTUNITIES"].sum())}')
 
-   
+
         # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
         if len(selected_MARKET) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_months) != 0:
             with st.expander("Show Table", expanded=False):
@@ -669,7 +995,7 @@ if selected2 == "Express Leaderboard":
                         styles={
                             "nav-link": {"--hover-color": "#a42bad4b"},
                             "nav-link-selected": {"background-color": "#832a80"}
-                            })
+                            },key="21")
 
     if selected == "Data Record":
 
@@ -691,7 +1017,7 @@ if selected2 == "Express Leaderboard":
         # Sidebar - Filter by MD (with multiselect)
         md_options = ['All'] + data[selected_months]["MD"].unique().tolist()  # Add 'All' to MD options
         selected_md = st.sidebar.multiselect('Select MD', md_options, default='All')
-       
+    
         # Filter MD only if 'All' is not selected
         if 'All' in selected_md or len(selected_md) == 0:
             filtered_df = data[selected_months]
@@ -736,9 +1062,9 @@ if selected2 == "Express Leaderboard":
                         display_md = ", ".join(selected_md)
                     if ["All"] in selected_md:
                         display_md = "All"
-                    col1.metric(f"Managing Director:", display_md, delta = None)
+                    col1.metric(f"Market Director:", display_md, delta = None)
                 else:
-                    col1.metric(f"Managing Director:", "-", delta = None)
+                    col1.metric(f"Market Director:", "-", delta = None)
 
                 if selected_dm:
                     if len(selected_dm) > 2:
@@ -777,4 +1103,492 @@ if selected2 == "Express Leaderboard":
     elif selected == 'Data Visualization':      
         st.write("Under-Development")
 
+if selected2 == "Audit Tracker Q3":
+    st.title("Audit Tracker Q3 Dashboard")
+    selected = option_menu(menu_title=None,options=["Data Record", "Data Visualization"],orientation='horizontal',
+                        styles={
+                            "nav-link": {"--hover-color": "#a42bad4b"},
+                            "nav-link-selected": {"background-color": "#832a80"}
+                            },key="22")
 
+    if selected == "Data Record":
+        
+        st.sidebar.header('Please Filter here:')
+        # Sidebar - Filter by MD (with multiselect)
+        md_options = ['All'] + df2['MD'].unique().tolist()  # Add 'All' to MD options
+        selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="23")
+    
+        # Filter MD only if 'All' is not selected
+        if 'All' in selected_md or len(selected_md) == 0:
+            filtered_df = df2
+        else:
+            filtered_df = df2[df2['MD'].isin(selected_md)]
+
+        # Ensure filtered_df is not empty before applying DM filter
+        if not filtered_df.empty:
+            dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
+            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="24")
+
+            # Filter MARKET only if 'All' is not selected
+            if 'All' not in selected_dm and len(selected_dm) > 0:
+                filtered_df = filtered_df[filtered_df['DM'].isin(selected_dm)]
+
+        # Ensure filtered_df is not empty before applying DM filter
+        if not filtered_df.empty:
+            MARKET_options = ['All'] + filtered_df['Market'].unique().tolist()  # Update MARKET options based on filtered DM data
+            selected_MARKET = st.sidebar.multiselect('Select Market', MARKET_options, default='All',key="25")
+
+            # Filter MARKET only if 'All' is not selected
+            if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
+                filtered_df = filtered_df[filtered_df['Market'].isin(selected_MARKET)]
+
+        # Ensure filtered_df is not empty before applying DM filter
+        if not filtered_df.empty:
+            Store_options = ['All'] + filtered_df['Store'].unique().tolist()  # Update MARKET options based on filtered DM data
+            selected_STORE = st.sidebar.multiselect('Select Store', Store_options, default='All',key="26")
+
+            # Filter MARKET only if 'All' is not selected
+            if 'All' not in selected_STORE and len(selected_STORE) > 0:
+                filtered_df = filtered_df[filtered_df['Store'].isin(selected_STORE)]
+
+        css_body_container = f'''
+        <style>
+            [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+            [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+        </style>
+        '''
+        st.markdown(css_body_container,unsafe_allow_html=True)
+
+        with st.expander(label="Key Metrics",expanded=True):
+            with st.container(border= True):
+
+                if not filtered_df.empty:
+                    Status_options = ['All'] + filtered_df['Status'].unique().tolist() 
+                    selected_Status = st.selectbox("Select Status:", Status_options, index=0,key="27")
+
+                    # Filter only if 'All' is not selected
+                    if selected_Status != 'All':
+                        filtered_df = filtered_df[(filtered_df['Status'] == selected_Status)]
+
+                col1, col2= st.columns(2)
+                if selected_md:
+                    if len(selected_md) > 2:
+                        display_md = f"{selected_md[0]}, {selected_md[1]} ..."
+                    else:
+                        display_md = ", ".join(selected_md)
+                    if ["All"] in selected_md:
+                        display_md = "All"
+                    col1.metric(f"Market Director:", display_md, delta = None)
+                else:
+                    col1.metric(f"Market Director:", "-", delta = None)
+
+                if selected_dm:
+                    if len(selected_dm) > 2:
+                        display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                    else:
+                        display_dm = ", ".join(selected_dm)
+                    if ["All"] in selected_dm:
+                        display_md = "All"
+                    col2.metric(f"District Manager:", display_dm, delta = None)
+                else:
+                    col2.metric(f"District Manager:", "-", delta = None)
+
+                if len(selected_STORE) == 0 or 'All' in selected_STORE:
+                    st.warning("No Score to show. Please select a Store.")
+
+                else: 
+                    col8, = st.columns(1)
+                    col8.info(f'"{selected_STORE[0]}" Score: {((filtered_df["Score_C"].sum())*100).round(2)}%')
+
+        # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+        if len(selected_MARKET) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_STORE) != 0:
+            with st.expander("Show Table", expanded=False):
+                st.dataframe(filtered_df[main_cols_audit], width=800)
+
+    elif selected == 'Data Visualization':
+        st.write("Under-Development")
+
+if selected2 == "Phone's Sales":
+    st.title("Performance Dashboard")
+    selected = option_menu(menu_title=None,options=["Data Record", "Data Visualization"],orientation='horizontal',
+                        styles={
+                            "nav-link": {"--hover-color": "#a42bad4b"},
+                            "nav-link-selected": {"background-color": "#832a80"}
+                            },key="28")
+
+    if selected == "Data Record":
+
+        radio_style = '''
+        <style>
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > label > div > p {
+
+            font-family: "Source Sans Pro", sans-serif;
+            font-weight: 600 !important;
+            font-size: 1.25rem !important;
+            color: #31333f !important;}
+
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > div {
+            border: 1.75px solid lightgrey; /* Light grey border */
+            border-radius: 15px; /* Rounded corners */
+            padding: 12px; /* Add some padding */
+            background-color: #f9f9f9; /* Optional: light background for contrast */
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1) !important; /* Subtle shadow for a softer look */}
+
+        #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stSidebar > div > div > div > div > div > div > div:nth-child(2) > div > div > label > div:first-child {
+            background-color: #832a80 !important;}    
+        </style>
+        '''
+        st.markdown(radio_style, unsafe_allow_html=True)
+
+        select_box_opts = ["Android","iPhones"]
+        selected_radio = st.sidebar.radio(
+            "Please Filter here:",
+            options=select_box_opts,
+            format_func=lambda x: x,
+            horizontal=True,key="321"
+        )
+        
+        if selected_radio == "Android":
+
+            css_body_container = """
+            <style>
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details {
+                    margin-top: -1.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+
+            # Sidebar - Filter by MD (with multiselect)
+            md_options = ['All'] + dfAnd['MD'].unique().tolist()  # Add 'All' to MD options
+            selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="29")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_md or len(selected_md) == 0:
+                filtered_df = dfAnd
+            else:
+                filtered_df = dfAnd[dfAnd['MD'].isin(selected_md)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
+                selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="30")
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_dm and len(selected_dm) > 0:
+                    filtered_df = filtered_df[filtered_df['DM'].isin(selected_dm)]
+
+            if not filtered_df.empty:
+                months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
+                selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="31")
+
+                # Filter only if 'All' is not selected
+                if 'All' not in selected_months and len(selected_months) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="32")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
+                    filtered_df = filtered_df[filtered_df['MARKET'].isin(selected_MARKET)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                Store_options = ['All'] + filtered_df['STORE'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="33")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_STORE and len(selected_STORE) > 0:
+                    filtered_df = filtered_df[filtered_df['STORE'].isin(selected_STORE)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                model_options = ['All'] + filtered_df['MODEL'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_model = st.sidebar.multiselect('Select MODEL', model_options, default='All',key="34")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_model and len(selected_model) > 0:
+                    filtered_df = filtered_df[filtered_df['MODEL'].isin(selected_model)]
+
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="35")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    col1, col2= st.columns(2)
+                    if selected_md:
+                        if len(selected_md) > 2:
+                            display_md = f"{selected_md[0]}, {selected_md[1]} ..."
+                        else:
+                            display_md = ", ".join(selected_md)
+                        if ["All"] in selected_md:
+                            display_md = "All"
+                        col1.metric(f"Market Director:", display_md, delta = None)
+                    else:
+                        col1.metric(f"Market Director:", "-", delta = None)
+
+                    if selected_dm:
+                        if len(selected_dm) > 2:
+                            display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                        else:
+                            display_dm = ", ".join(selected_dm)
+                        if ["All"] in selected_dm:
+                            display_md = "All"
+                        col2.metric(f"District Manager:", display_dm, delta = None)
+                    else:
+                        col2.metric(f"District Manager:", "-", delta = None)
+
+                    if len(selected_MARKET) == 0 and len(selected_model) == 0 and len(selected_dm) == 0 and len(selected_md) == 0 and len(selected_months) == 0:
+                        st.warning("No data to show. Please adjust the filters.")
+
+                    else: 
+                        col50,col5 = st.columns(2)
+                        col50.info(f'Average Price: {commas(filtered_df["AVERAGE PRICE"].mean())}')
+                        col5.info(f'Quantity: {commas_nd(filtered_df["QUANTITY"].sum())}')
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_MARKET) != 0 or len(selected_model) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_months) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols_and], width=800)
+            
+        if selected_radio == "iPhones":
+
+            css_body_container = """
+            <style>
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details > div > div > div > div > div > div > div div[data-testid="stMarkdownContainer"] p {
+                    font-size: 0.88rem;
+                }
+
+                #root > div:nth-child(1) > div.withScreencast > div > div > div > section.stAppViewMain.main > div.stAppViewBlockContainer > div > div > div > div:nth-child(8) > details {
+                    margin-top: -1.8em; /* or any other unit */
+
+                }
+            </style>
+            """
+            st.markdown(css_body_container, unsafe_allow_html=True)
+
+            # Sidebar - Filter by MD (with multiselect)
+            md_options = ['All'] + dfAnd['MD'].unique().tolist()  # Add 'All' to MD options
+            selected_md = st.sidebar.multiselect('Select MD', md_options, default='All',key="36")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_md or len(selected_md) == 0:
+                filtered_df = dfIp
+            else:
+                filtered_df = dfIp[dfIp['MD'].isin(selected_md)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                dm_options = ['All'] + filtered_df['DM'].unique().tolist()  # Update DM options based on filtered MD data
+                selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="37")
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_dm and len(selected_dm) > 0:
+                    filtered_df = filtered_df[filtered_df['DM'].isin(selected_dm)]
+
+            if not filtered_df.empty:
+                months_options = ['All'] + filtered_df['MONTH'].unique().tolist()
+                selected_months = st.sidebar.multiselect('Select MONTH', months_options, default='All',key="38")
+
+                # Filter only if 'All' is not selected
+                if 'All' not in selected_months and len(selected_months) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_months)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_MARKET = st.sidebar.multiselect('Select MARKET', MARKET_options, default='All',key="39")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
+                    filtered_df = filtered_df[filtered_df['MARKET'].isin(selected_MARKET)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                Store_options = ['All'] + filtered_df['STORE'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_STORE = st.sidebar.multiselect('Select STORE', Store_options, default='All',key="40")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_STORE and len(selected_STORE) > 0:
+                    filtered_df = filtered_df[filtered_df['STORE'].isin(selected_STORE)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                model_options = ['All'] + filtered_df['MODEL'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_model = st.sidebar.multiselect('Select MODEL', model_options, default='All',key="41")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_model and len(selected_model) > 0:
+                    filtered_df = filtered_df[filtered_df['MODEL'].isin(selected_model)]
+
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    if not filtered_df.empty:
+                        timeframe_options = ['All'] + filtered_df['TIME FRAME'].unique().tolist() 
+                        selected_timeframe = st.selectbox("Select Time Period:", timeframe_options, index=0,key="42")
+
+                        # Filter only if 'All' is not selected
+                        if selected_timeframe != 'All':
+                            filtered_df = filtered_df[(filtered_df['TIME FRAME'] == selected_timeframe)]
+
+                    col1, col2= st.columns(2)
+                    if selected_md:
+                        if len(selected_md) > 2:
+                            display_md = f"{selected_md[0]}, {selected_md[1]} ..."
+                        else:
+                            display_md = ", ".join(selected_md)
+                        if ["All"] in selected_md:
+                            display_md = "All"
+                        col1.metric(f"Market Director:", display_md, delta = None)
+                    else:
+                        col1.metric(f"Market Director:", "-", delta = None)
+
+                    if selected_dm:
+                        if len(selected_dm) > 2:
+                            display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                        else:
+                            display_dm = ", ".join(selected_dm)
+                        if ["All"] in selected_dm:
+                            display_md = "All"
+                        col2.metric(f"District Manager:", display_dm, delta = None)
+                    else:
+                        col2.metric(f"District Manager:", "-", delta = None)
+
+                    if len(selected_MARKET) == 0 and len(selected_model) == 0 and len(selected_dm) == 0 and len(selected_md) == 0 and len(selected_months) == 0:
+                        st.warning("No data to show. Please adjust the filters.")
+
+                    else: 
+                        col50,col5 = st.columns(2)
+                        col50.info(f'Average Price: {commas(filtered_df["AVERAGE PRICE"].mean())}')
+                        col5.info(f'Quantity: {commas_nd(filtered_df["QUANTITY"].sum())}')
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_MARKET) != 0 or len(selected_model) != 0 or len(selected_dm) != 0 or len(selected_md) != 0 or len(selected_months) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df[main_cols_ip], width=800)
+
+
+if selected2 == "Hiring YTD":
+        st.title("HIRING YTD Dashboard")
+        selected = option_menu(menu_title=None,options=["Data Record", "Data Visualization"],orientation='horizontal',
+                            styles={
+                                "nav-link": {"--hover-color": "#a42bad4b"},
+                                "nav-link-selected": {"background-color": "#832a80"}
+                                },key="58")
+
+        if selected == "Data Record":
+            st.sidebar.header('Please Filter here:')
+            # Sidebar - Filter by DM (with multiselect)
+            dm_options = ['All'] + dfH['HIRING MANAGER'].unique().tolist()  # Add 'All' to MD options
+            selected_dm = st.sidebar.multiselect('Select DM', dm_options, default='All',key="59")
+        
+            # Filter MD only if 'All' is not selected
+            if 'All' in selected_dm or len(selected_dm) == 0:
+                filtered_df = dfH
+            else:
+                filtered_df = dfH[dfH['HIRING MANAGER'].isin(selected_dm)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                MARKET_options = ['All'] + filtered_df['MARKET'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_MARKET = st.sidebar.multiselect('Select Market', MARKET_options, default='All',key="60")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_MARKET and len(selected_MARKET) > 0:
+                    filtered_df = filtered_df[filtered_df['MARKET'].isin(selected_MARKET)]
+
+            # Ensure filtered_df is not empty before applying DM filter
+            if not filtered_df.empty:
+                month_options = ['All'] + filtered_df['MONTH'].unique().tolist()  # Update MARKET options based on filtered DM data
+                selected_month = st.sidebar.multiselect('Select MONTH', month_options, default='All',key="61")
+
+                # Filter MARKET only if 'All' is not selected
+                if 'All' not in selected_month and len(selected_month) > 0:
+                    filtered_df = filtered_df[filtered_df['MONTH'].isin(selected_month)]
+
+            css_body_container = f'''
+            <style>
+                [data-testid="stSidebar"] + section [data-testid="stVerticalBlock"] div:nth-of-type({1})
+                [data-testid="stVerticalBlock"] {{background-color:#f1f1f1de}}
+            </style>
+            '''
+            st.markdown(css_body_container,unsafe_allow_html=True)
+
+            with st.expander(label="Key Metrics",expanded=True):
+                with st.container(border= True):
+
+                    #if not filtered_df.empty:
+                     #   Status_options = ['All'] + filtered_df['Status'].unique().tolist() 
+                      #  selected_Status = st.selectbox("Select Status:", Status_options, index=0,key="62")
+
+                        # Filter only if 'All' is not selected
+                       # if selected_Status != 'All':
+                        #    filtered_df = filtered_df[(filtered_df['Status'] == selected_Status)]
+
+                    col1, col2= st.columns(2)
+                    if selected_dm:
+                        if len(selected_dm) > 2:
+                            display_dm = f"{selected_dm[0]}, {selected_dm[1]} ..."
+                        else:
+                            display_dm = ", ".join(selected_dm)
+                        if ["All"] in selected_dm:
+                            display_dm = "All"
+                        col1.metric(f"District Manager:", display_dm, delta = None)
+                    else:
+                        col1.metric(f"District Manager:", "-", delta = None)
+
+                    if selected_MARKET:
+                        if len(selected_MARKET) > 2:
+                            display_market = f"{selected_MARKET[0]}, {selected_MARKET[1]} ..."
+                        else:
+                            display_market = ", ".join(selected_MARKET)
+                        if ["All"] in selected_MARKET:
+                            display_md = "All"
+                        col2.metric(f"Market:", display_market, delta = None)
+                    else:
+                        col2.metric(f"Market:", "-", delta = None)
+
+                    if len(selected_dm) == 0 | len(selected_MARKET) == 0 :
+                        st.warning("No Data to show. Please adjust filters.")
+
+                    else: 
+                        col8, = st.columns(1)
+                        col8.info(f'Total Avg of Hiring: {((filtered_df["AVERAGE OF HIRING"].mean())).round(2)}')
+
+            # Display filtered dataframe with selected MD, MARKET, DM, and TIME FRAME
+            if len(selected_MARKET) != 0 or len(selected_dm) != 0 or len(selected_month) != 0:
+                with st.expander("Show Table", expanded=False):
+                    st.dataframe(filtered_df, width=800)
